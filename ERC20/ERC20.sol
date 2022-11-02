@@ -34,6 +34,7 @@ contract ERC20 is IERC20 {
     error approveToZeroAddress();
     error insufficientAllowanceError(uint256, uint256);
     error transferAmountExceedsBalance();
+    error burnAmountExceedsBalance();
 
 
     // only owner
@@ -119,8 +120,14 @@ contract ERC20 is IERC20 {
 
     // _burn
     function _burn(address _account, uint256 _amount) onlyOwner external {
+        if (balanceOf[_account] < _amount) {
+            revert burnAmountExceedsBalance();
+        }
+    unchecked{
         balanceOf[_account] -= _amount;
         totalSupply -= _amount;
+
+    }
         emit Transfer(_account, address(0), _amount);
     }
 }
