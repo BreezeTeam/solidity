@@ -66,11 +66,11 @@ contract ERC20 is IERC20 {
 
     // impl transferFrom function
     function transferFrom(address _sender, address _recipient, uint256 _amount) external override returns (bool){
-        uint256 curAllowance = allowance[_sender][_recipient];
+        uint256 curAllowance = allowance[_sender][msg.sender];
         if (curAllowance < _amount) {
             revert insufficientAllowanceError(curAllowance, _amount);
         }
-        _approve(_sender, _recipient, curAllowance - _amount);
+        _approve(_sender, msg.sender, curAllowance - _amount);
         _transfer(_sender, _recipient, _amount);
         return true;
     }
