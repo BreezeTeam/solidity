@@ -1,9 +1,7 @@
-use std::sync::Arc;
 use std::error::Error;
-use std::thread::sleep;
-use std::time::Duration;
-use ethers::{abi::AbiDecode, prelude::*, utils::keccak256};
 
+use chrono::prelude::*;
+use ethers::{abi::AbiDecode, prelude::*, utils::keccak256};
 use ethers::providers::Middleware;
 
 // use tracing::{Instrument, Level};
@@ -26,6 +24,12 @@ abigen!(
     ]"#
 );
 
+// abigen!(
+//     UniswapV2Router02,
+//     r#"[
+//         Swap(index_topic_1 address sender, uint256 amount0In, uint256 amount1In, uint256 amount0Out, uint256 amount1Out, index_topic_2 address to)View Source
+//     ]'"#
+//     );
 fn main() -> Result<(), Box<dyn Error>> {
     // create runtime
     let runtime = tokio::runtime::Builder::new_multi_thread()
@@ -35,110 +39,22 @@ fn main() -> Result<(), Box<dyn Error>> {
         .unwrap();
 
     // env initialization
-    let env = runtime.block_on(runtime.spawn(Env::new()))?.unwrap();
+    let mut env = runtime.block_on(runtime.spawn(Env::new()))?.unwrap();
+
+    // get last block
+
 
     // show transfer
-    runtime.block_on(runtime.spawn(wss_show_transfer(env)))?.unwrap();
-    // runtime.block_on(runtime.spawn(wss_show_swap(env)))?.unwrap();
+    // runtime.spawn(wss_show_transfer(&env));
+    // runtime.block_on()?.unwrap();
+    runtime.block_on(runtime.spawn(wss_show_swap(env)))?.unwrap();
 
-
+    loop {}
     Ok(())
 }
 
 
-async fn wss_show_transfer(env: Env) -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
-    let last_block = env.wss_provider.get_block(BlockNumber::Latest).await?.unwrap().number.unwrap();
-    println!("last_block: {}", last_block);
-
-    let erc20_transfer_filter = Filter::new()
-        .from_block(last_block - 25)
-        .topic0(ValueOrArray::Value(H256::from(keccak256("Transfer(address,address,uint256)"))));
-    // .topic0(ValueOrArray::Value(H256::from(keccak256("Approval(address,address,uint256)"))));
-
-    let mut stream = env.wss_provider.subscribe_logs(&erc20_transfer_filter).await?;
-
-    while let Some(log) = stream.next().await {
-        println!("{:?}", log);
-        println!(
-            "block: {:?}, tx: {:?}, token: {:?}, from: {:?}, to: {:?}, amount: {:?}",
-            log.block_number,
-            log.transaction_hash,
-            log.address,
-            Address::from(log.topics[1]),
-            Address::from(log.topics[2]),
-            U256::decode(log.data)
-        );
-    }
-    Ok(())
-}
-// async fn wss_show_transfer(env: Env) -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
-//     let last_block = env.wss_provider.get_block(BlockNumber::Latest).await?.unwrap().number.unwrap();
-//     println!("last_block: {}", last_block);
-//
-//     let erc20_transfer_filter = Filter::new()
-//         .from_block(last_block - 25)
-//         .topic0(ValueOrArray::Value(H256::from(keccak256("Transfer(address,address,uint256)"))));
-//     // .topic0(ValueOrArray::Value(H256::from(keccak256("Approval(address,address,uint256)"))));
-//
-//     let mut stream = env.wss_provider.subscribe_logs(&erc20_transfer_filter).await?;
-//
-//     while let Some(log) = stream.next().await {
-//         println!(
-//             "block: {:?}, tx: {:?}, token: {:?}, from: {:?}, to: {:?}, amount: {:?}",
-//             log.block_number,
-//             log.transaction_hash,
-//             log.address,
-//             Address::from(log.topics[1]),
-//             Address::from(log.topics[2]),
-//             U256::decode(log.data)
-//         );
-//     }
-//     Ok(())
-// }
-
-async fn wss_show_swap(env: Env) -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
-    let last_block = env.wss_provider.get_block(BlockNumber::Latest).await?.unwrap().number.unwrap();
-    println!("last_block: {}", last_block);
-
-    let erc20_transfer_filter = Filter::new()
-        .from_block(last_block - 25)
-        .topic0(ValueOrArray::Value(H256::from(keccak256("Swap(address,uint256,uint256,uint256,uint256,address)"))));
-
-    let mut stream = env.wss_provider.subscribe_logs(&erc20_transfer_filter).await?;
-
-    while let Some(log) = stream.next().await {
-        println!(
-            "block: {:?}, tx: {:?}, token: {:?}, from: {:?}, to: {:?}, amount: {:?}",
-            log.block_number,
-            log.transaction_hash,
-            log.address,
-            Address::from(log.topics[1]),
-            Address::from(log.topics[2]),
-            U256::decode(log.data)
-        );
-    }
-    Ok(())
-}
-
-async fn my_bg_task(i: u64) {
-    // By subtracting, the tasks with larger values of i sleep for a
-    // shorter duration.
-    let millis = 1000 - 50 * i;
-    println!("Task {} sleeping for {} ms.", i, millis);
-
-    sleep(Duration::from_millis(millis));
-
-    println!("Task {} stopping.", i);
-}
-
-fn log() {
-    // tracing lib init
-    // let file_appender = tracing_appender::rolling::hourly("./", "example.log");
-    // let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
-    // tracing_subscriber::fmt().with_writer(non_blocking).init();
-}
-
-fn test() {
+fn test_http() {
 
     // let from = accounts[0];
     // let to = accounts[1];
@@ -169,4 +85,63 @@ fn test() {
     //     .subscribe_pending_txs()
     //     .await
     //     .expect("Error while subscribing to pending transactions topic");
+}
+
+// async fn wss_show_transfer(ref env: &Env) -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
+//     let erc20_transfer_filter = Filter::new()
+//         .from_block(env.last_block().await - 25)
+//         .topic0(ValueOrArray::Value(H256::from(keccak256("Transfer(address,address,uint256)"))));
+//     // .topic0(ValueOrArray::Value(H256::from(keccak256("Approval(address,address,uint256)"))));
+//     let mut stream = env.wss_provider.subscribe_logs(&erc20_transfer_filter).await?;
+//     while let Some(log) = stream.next().await {
+//         println!(
+//             "block: {:?}, tx: {:?}, token: {:?}, from: {:?}, to: {:?}, amount: {:?}",
+//             log.block_number,
+//             log.transaction_hash,
+//             log.address,
+//             Address::from(log.topics[1]),
+//             Address::from(log.topics[2]),
+//             U256::decode(log.data)
+//         );
+//     }
+//     Ok(())
+// }
+
+// websocket event
+async fn wss_show_swap(mut env: Env) -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
+    //Swap(index_topic_1 address sender, uint256 amount0In, uint256 amount1In, uint256 amount0Out, uint256 amount1Out, index_topic_2 address to)View Source
+    let erc20_swap_filter = Filter::new()
+        .from_block(env.last_block().await - 25)
+        .topic0(ValueOrArray::Value(H256::from(keccak256("Swap(address,uint256,uint256,uint256,uint256,address)"))));
+    let mut stream = env.wss_provider.subscribe_logs(&erc20_swap_filter).await?;
+    while let Some(log) = stream.next().await {
+        if Address::from(log.topics[1]) != env.swap_contract { continue; }
+        println!(
+            "{:?} ,block: {:?}, tx: {:?}, token: {:?}, sender: {:?}, to: {:?}, amount: {:?}",
+            now(),
+            log.block_number,
+            log.transaction_hash,
+            log.address,
+            Address::from(log.topics[1]),
+            Address::from(log.topics[2]),
+            U256::decode(log.data)
+        );
+    }
+    Ok(())
+}
+
+// get now time
+fn now() -> DateTime<Local> {
+    let now: DateTime<Local> = Local::now();
+    let mills: i64 = now.timestamp_millis();
+    let dt: DateTime<Local> = Local.timestamp_millis(mills);
+    return dt;
+}
+
+
+fn log() {
+    // tracing lib init
+    // let file_appender = tracing_appender::rolling::hourly("./", "example.log");
+    // let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+    // tracing_subscriber::fmt().with_writer(non_blocking).init();
 }
