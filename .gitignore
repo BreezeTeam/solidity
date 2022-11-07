@@ -4,3 +4,5 @@ bin
 .vscode
 .code
 /WTF-Solidity/*
+mev-inspect-rs
+/mev-inspect-rs/*

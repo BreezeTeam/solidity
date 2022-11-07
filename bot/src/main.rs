@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::sync::Arc;
 
 use chrono::prelude::*;
 use ethers::{abi::AbiDecode, prelude::*, utils::keccak256};
@@ -39,15 +40,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         .unwrap();
 
     // env initialization
+    // let env = Arc::new(runtime.block_on(runtime.spawn(Env::new()))?.unwrap());
     let mut env = runtime.block_on(runtime.spawn(Env::new()))?.unwrap();
-
-    // get last block
-
-
     // show transfer
-    // runtime.spawn(wss_show_transfer(&env));
+    runtime.spawn(wss_show_transfer(env.clone()));
     // runtime.block_on()?.unwrap();
-    runtime.block_on(runtime.spawn(wss_show_swap(env)))?.unwrap();
+    runtime.spawn(wss_show_swap(env.clone()));
 
     loop {}
     Ok(())
@@ -87,25 +85,25 @@ fn test_http() {
     //     .expect("Error while subscribing to pending transactions topic");
 }
 
-// async fn wss_show_transfer(ref env: &Env) -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
-//     let erc20_transfer_filter = Filter::new()
-//         .from_block(env.last_block().await - 25)
-//         .topic0(ValueOrArray::Value(H256::from(keccak256("Transfer(address,address,uint256)"))));
-//     // .topic0(ValueOrArray::Value(H256::from(keccak256("Approval(address,address,uint256)"))));
-//     let mut stream = env.wss_provider.subscribe_logs(&erc20_transfer_filter).await?;
-//     while let Some(log) = stream.next().await {
-//         println!(
-//             "block: {:?}, tx: {:?}, token: {:?}, from: {:?}, to: {:?}, amount: {:?}",
-//             log.block_number,
-//             log.transaction_hash,
-//             log.address,
-//             Address::from(log.topics[1]),
-//             Address::from(log.topics[2]),
-//             U256::decode(log.data)
-//         );
-//     }
-//     Ok(())
-// }
+async fn wss_show_transfer(mut env: Env) -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
+    let erc20_transfer_filter = Filter::new()
+        .from_block(env.last_block().await - 25)
+        .topic0(ValueOrArray::Value(H256::from(keccak256("Transfer(address,address,uint256)"))));
+    // .topic0(ValueOrArray::Value(H256::from(keccak256("Approval(address,address,uint256)"))));
+    let mut stream = env.wss_provider.subscribe_logs(&erc20_transfer_filter).await?;
+    while let Some(log) = stream.next().await {
+        println!(
+            "block: {:?}, tx: {:?}, token: {:?}, from: {:?}, to: {:?}, amount: {:?}",
+            log.block_number,
+            log.transaction_hash,
+            log.address,
+            Address::from(log.topics[1]),
+            Address::from(log.topics[2]),
+            U256::decode(log.data)
+        );
+    }
+    Ok(())
+}
 
 // websocket event
 async fn wss_show_swap(mut env: Env) -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
