@@ -36,7 +36,7 @@ contract Airdrop {
 
 
     // sum internal function
-    function sum(uint256[] memory _array) internal returns (uint256) {
+    function sum(uint256[] memory _array) pure internal returns (uint256) {
         uint256 total = 0;
         for (uint i = 0; i < _array.length; i++) {
             total += _array[i];

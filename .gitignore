@@ -1,9 +1,20 @@
-WTF-Solidity
 bin
 .idea
 .vscode
 .code
+
+##  project
+WTF-Solidity
 /WTF-Solidity/*
 mev-inspect-rs
+/mev-inspect-rs/
 /mev-inspect-rs/*
 foundry
+bot
+
+
+# foundry
+out
+lib
+/lib/
+cache
