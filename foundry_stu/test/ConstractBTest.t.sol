@@ -1,0 +1,22 @@
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.10;
+
+import "forge-std/Test.sol";
+
+contract ContractBTest is Test {
+    uint256 testNumber;
+
+    function setUp() public {
+        testNumber = 42;
+    }
+
+    function testNumberIs42() public {
+        testNumber = 42;
+        assertEq(testNumber, 42);
+    }
+
+    function testFailSubtract43() public {
+        testNumber = 42;
+        testNumber -= 43;
+    }
+}
