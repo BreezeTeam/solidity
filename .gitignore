@@ -6,3 +6,4 @@ bin
 /WTF-Solidity/*
 mev-inspect-rs
 /mev-inspect-rs/*
+foundry
