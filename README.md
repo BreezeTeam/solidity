@@ -8,6 +8,29 @@ web3 合约开发学习
 
 `forge init`
 
+### lib
+
+foundry合约开发框架生成的文件夹
+
+### contracts
+
+foundry合约开发框架需求的合约src文件夹
+
+### foundry.toml 文件内容:
+
+```toml
+[profile.default]
+src = 'contracts'
+out = 'out'
+libs = ['lib']
+remappings = [
+    'solmate-utils/=lib/solmate/src/utils/',
+    "ds-test/=lib/forge-std/lib/ds-test/src/",
+    "forge-std/=lib/forge-std/src/",
+    '@openzeppelin/=lib/openzeppelin-contracts/'
+]
+```
+
 ## hardhat 兼容
 
 使用 remappings 实现，在 foundry.toml 中配置 remappings
@@ -22,22 +45,24 @@ remapping:`@openzeppelin/=lib/openzeppelin-contracts/`
 添加依赖：`forge install https://github.com/foundry-rs/forge-std --no-commit`
 remapping:`ds-test/=lib/ds-test/src/`
 
+## web3学习杂项
 
+### lingAddress
 
-# lingAddress
-基于clap，ethers-rs的 靓号生成器
+基于clap，ethers-rs开发的靓号生成器
 
-# bot(WIP)
+### bot(WIP)
+
 套利机器人
 
-# foundry_stu
+### foundry_stu
+
 学习foundry的demo项目
 
-# hardhat_stu
+### hardhat_stu
+
 学习hardhat的demo项目
 
-# lib
-foundry合约开发框架中，用于合于导入lib存储的
+### dapp_stu
 
-# dapp_stu
 TinTinLab 的课程作业
