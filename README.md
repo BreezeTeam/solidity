@@ -45,6 +45,28 @@ remapping:`@openzeppelin/=lib/openzeppelin-contracts/`
 添加依赖：`forge install https://github.com/foundry-rs/forge-std --no-commit`
 remapping:`ds-test/=lib/ds-test/src/`
 
+## contracts
+
+### Airdrop
+
+空头合约，一个支持批量转账的合约
+
+### ERC20
+
+定义接口并实现了ERC20标准
+
+### Faucet
+
+水龙头合约
+
+1. 可以通过构造函数，设置发放的ERC20合约地址
+2. 用户调用领取函数，可以从合约地址领取到自己的账户上
+3. 需要在部署后，手动转账到水龙头合约地址
+
+### reentry
+
+重入攻击学习
+
 ## web3学习杂项
 
 ### lingAddress
