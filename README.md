@@ -67,6 +67,37 @@ remapping:`ds-test/=lib/ds-test/src/`
 
 重入攻击学习
 
+### ERC721
+
+定义接口并实现了ERC721,ERC165标准
+
+### DutchAuction
+
+一种简化版的Azuki减价拍卖合约
+
+### MerkleTree
+
+利用MerkleTree合约发放NFT白名单
+
+### SignatureNFT
+
+利用ECDSA签名发放白名单
+
+### NFTSwap
+
+设计实现可可以进行挂单list、撤单revoke、修改价格update，购买purchase，的NFT交易所
+
+### 随机数
+
+使用哈希函数实现链上随机数以及使用chainlink预言机生成链下随机数
+
+### ERC1155
+
+实现了可以一个合约包含多种代币的ERC1155标准
+
+### WETH
+为ETH进行合约包装，使ETH满足ERC2标准
+
 ## web3学习杂项
 
 ### lingAddress

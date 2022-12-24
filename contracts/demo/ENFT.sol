@@ -35,11 +35,11 @@ contract ENFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
         if (msg.value == 0 && _freeMintUserIdCounter.current() <= MAX_FREE_MINT_USER_SUPPLY &&
             block.timestamp >= start + daysAfter * 1 days
         ) {
-            require(userFreeMintMapping[to] < USER_MAX_FREE_COUNT, "I'm sorry, you are not qualified for free mint anymore");
+            require(_userFreeMintMapping[to] < USER_MAX_FREE_COUNT, "I'm sorry, you are not qualified for free mint anymore");
             // add free mint count
-            userFreeMintMapping[to] += 1;
+            _userFreeMintMapping[to] += 1;
             // wen user first free mint ,inc
-            if (userFreeMintMapping[to] == 1) {
+            if (_userFreeMintMapping[to] == 1) {
                 _freeMintUserIdCounter.increment();
             }
         } else {
